@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Marker Clustering</title>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+	<script>
+					//	LINE 42 FOR  
+			//Elmer Dea
+			//11/10/16
+			window.addEventListener("load",getData(),false);
+			//function readOut(){document.getElementById("testOut").innerHTML = getData();}
+
+			var xhr = false;
+			//on load, creates new xhr for openWeather api
+
+			var updateElement = function(data) {
+				  document.getElementById("testOut").innerHTML = data;
+			}
+
+			function getData(callback)
+			{
+				//console.log("world" + callBack)
+				xhr = new XMLHttpRequest();
+				if (xhr) 
+				{ 
+							try 
+							{
+								xhr.open("GET", "https://data.nasa.gov/resource/y77d-th95.json?$where=mass%3E2000000");
+								xhr.send();
+							}
+							catch (e) 
+							{
+								alert("t3");
+							}	
+				}
+				//if ready and okay, parses xhr data via json
+				
+				var gloc;
+				xhr.onreadystatechange = function() {
+					if (this.readyState == 4 && this.status == 200) {
+						var myArr = JSON.parse(this.responseText);
+						write(myArr);
+					   gloc = write(myArr);
+					  console.log("hello" + gloc);
+					  
+					  //document.getElementById("testOut").innerHTML = gloc;
+					  //return gloc;
+					  //updateElement(gloc);
+					  if (typeof callback === 'function'){ 
+					  callback(gloc);
+					  }
+					}
+				};
+			}
+
+			//creates string with text and json data for display
+
+
+
+			function write(w) 
+			{
+				var loc = []
+				for (i = 0; i < 30; i++)
+				{	
+				//{lat: -31.563910, lng: 147.154312}
+					var lat = w[i].geolocation.coordinates[1];
+					var lng = w[i].geolocation.coordinates[0];
+					loc.push({lat: lat, lng: lng})
+				}
+				//loc = loc.substring(0, loc.length - 1);
+				//loc += "]";
+				//document.getElementById("testOut").innerHTML = loc;
+				
+				return loc;
+			}
+	</script>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+      function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 3,
+          center: {lat: -28.024, lng: 140.887}
+        });
+        // Create an array of alphabetical characters used to label the markers.
+        var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        // Add some markers to the map.
+        // Note: The code uses the JavaScript Array.prototype.map() method to
+        // create an array of markers based on a given "locations" array.
+        // The map() method here has nothing to do with the Google Maps API.
+		var locations = []
+		getData(function(data) {
+	  
+		console.log('this is a callback', data);
+		
+		locations = data;
+		var markers = locations.map(function(location, i) {
+          return new google.maps.Marker({
+            position: location,
+            label: labels[i % labels.length]
+          });
+        });
+		var markerCluster = new MarkerClusterer(map, markers,
+            {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+	  });
+	  
+        
+        // Add a marker clusterer to manage the markers.
+        
+      }
+	 
+	 // var updateElement = function(data) {
+	  //document.getElementById("testOut").innerHTML = data;
+	 // }
+	  //document.getElementById("testOut").innerHTML = getData(updateElement);
+	  //getData(updateElement);
+	  
+      
+	  //[{lat: 6.08333, lng: 50.775},{lat: 10.23333, lng: 56.18333},{lat: -113, lng: 54.21667},{lat: -99.9, lng: 16.88333},{lat: -64.95, lng: -33.16667},{lat: 71.8, lng: 32.1},{lat: 95.16667, lng: 44.83333},{lat: 0.61667, lng: 44.21667},{lat: -65.23333, lng: -31.6},{lat: -64.55, lng: -30.86667},{lat: -9.57028, lng: 16.39806},{lat: 8.38333, lng: 19.08333},{lat: 2.33333, lng: 50.66667},{lat: 35.05, lng: 29.51667},{lat: 77.95, lng: 29.71667},{lat: 8.43333, lng: 8.91667},{lat: 42.81667, lng: 39.91667},{lat: 39.51667, lng: 24.41667},{lat: 28.96, lng: 13.66033},{lat: 4.08333, lng: 44.11667},{lat: 11.01667, lng: 44.65},{lat: 22.66667, lng: 2},{lat: 6.01533, lng: 45.82133},{lat: -1.78333, lng: 51.78333},{lat: 37.13333, lng: 36.23333},{lat: 8.75, lng: 44.88333},{lat: 31.81667, lng: 50.95},{lat: 10.15, lng: 45.26667},{lat: -85.88333, lng: 42.53333},{lat: -105.31667, lng: 26.96667},{lat: 32.41275, lng: 20.74575},{lat: 44.21556, lng: 35.27333},{lat: 78.25, lng: 27.66667},{lat: 85.56667, lng: 26.58333},{lat: -70.75, lng: 44.61667},{lat: 37.5, lng: 48.7},{lat: 76.86667, lng: 20.88333},{lat: 0, lng: 0},{lat: -0.55, lng: 47.46667},{lat: -44.31667, lng: -22.96667},{lat: 39.71667, lng: 9.53333},{lat: 105.18333, lng: 25.15},{lat: 140.78556, lng: 40.81056},{lat: -2.71667, lng: 53.58333},{lat: 5.38333, lng: 43.86667},{lat: -66, lng: -33},{lat: -94.3, lng: 38.5},{lat: -60.66667, lng: -31.41667},{lat: 9.03333, lng: 42.45},{lat: -97.01, lng: 31.805}]
+    </script>
+    <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC7Fxo_MPX7X-LgOWtZetEqVzNUeJLh6II&callback=initMap">
+    </script>
+  </body>
+</html>
